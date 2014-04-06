@@ -10,6 +10,8 @@
 #region Using Statements
 using Microsoft.Xna.Framework;
 using System;
+using Platformer.GameInputManagement;
+using Microsoft.Xna.Framework.Content;
 #endregion
 
 namespace Platformer.GameStateManagement
@@ -36,7 +38,8 @@ namespace Platformer.GameStateManagement
     public abstract class GameScreen
     {
         #region Properties
-
+        protected InputManager inputManager = new InputManager();
+        protected ContentManager content;
 
         /// <summary>
         /// Normally when one screen is brought up over the top of another,
@@ -275,7 +278,7 @@ namespace Platformer.GameStateManagement
         /// is only called when the screen is active, and not when some other
         /// screen has taken the focus.
         /// </summary>
-        public virtual void HandleInput(InputState input) { }
+        public virtual void HandleInput() { }
 
 
         /// <summary>

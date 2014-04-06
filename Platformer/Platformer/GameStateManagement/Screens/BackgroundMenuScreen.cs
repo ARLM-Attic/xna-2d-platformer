@@ -8,10 +8,10 @@
 #endregion
 
 #region Using Statements
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 #endregion
 
 
@@ -26,15 +26,10 @@ namespace Platformer.GameStateManagement.Screens
     public class BackgroundScreen : GameScreen
     {
         #region Fields
-
-        ContentManager content;
         Texture2D backgroundTexture;
-
         #endregion
 
         #region Initialization
-
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -43,7 +38,6 @@ namespace Platformer.GameStateManagement.Screens
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
         }
-
 
         /// <summary>
         /// Loads graphics content for this screen. The background texture is quite
@@ -60,7 +54,6 @@ namespace Platformer.GameStateManagement.Screens
             backgroundTexture = content.Load<Texture2D>("Images/backgroundMainMenu");
         }
 
-
         /// <summary>
         /// Unloads graphics content for this screen.
         /// </summary>
@@ -68,13 +61,9 @@ namespace Platformer.GameStateManagement.Screens
         {
             content.Unload();
         }
-
-
         #endregion
 
         #region Update and Draw
-
-
         /// <summary>
         /// Updates the background screen. Unlike most screens, this should not
         /// transition off even if it has been covered by another screen: it is
@@ -87,7 +76,6 @@ namespace Platformer.GameStateManagement.Screens
         {
             base.Update(gameTime, otherScreenHasFocus, false);
         }
-
 
         /// <summary>
         /// Draws the background screen.
@@ -105,8 +93,6 @@ namespace Platformer.GameStateManagement.Screens
 
             spriteBatch.End();
         }
-
-
         #endregion
     }
 }

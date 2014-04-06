@@ -91,9 +91,10 @@ namespace Platformer.GameStateManagement.Helpers
         /// <summary>
         /// Responds to user input, accepting or cancelling the message box.
         /// </summary>
-        public override void HandleInput(InputState input)
+        public override void HandleInput()
         {
-            PlayerIndex playerIndex;
+            //TODO: A corriger
+            /*PlayerIndex playerIndex;
 
             // We pass in our ControllingPlayer, which may either be null (to
             // accept input from any player) or a specific index. If we pass a null
@@ -115,7 +116,7 @@ namespace Platformer.GameStateManagement.Helpers
                     Cancelled(this, new PlayerIndexEventArgs(playerIndex));
 
                 ExitScreen();
-            }
+            }*/
         }
 
 

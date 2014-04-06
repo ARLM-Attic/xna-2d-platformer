@@ -1,10 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Platformer.GameStateManagement.Helpers;
+using Microsoft.Xna.Framework.Input;
+using Platformer.GameInputManagement;
 using System;
 using System.Collections.Generic;
 
-namespace Platformer.GameStateManagement.Screens
+namespace Platformer.GameStateManagement.Helpers
 {
     /// <summary>
     /// Classe de base pour un menu.
@@ -33,14 +34,29 @@ namespace Platformer.GameStateManagement.Screens
 
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+
+            #region Actions initialization
+            inputManager.AddAction("MenuUp").Add(Keys.Up).Add(Buttons.LeftThumbstickUp).Add(Buttons.DPadUp);
+            inputManager.AddAction("MenuDown").Add(Keys.Down)
+                                              .Add(Buttons.LeftThumbstickDown).Add(Buttons.DPadDown);
+            inputManager.AddAction("MenuLeft").Add(Keys.Left)
+                                              .Add(Buttons.LeftThumbstickLeft).Add(Buttons.DPadLeft);
+            inputManager.AddAction("MenuRight").Add(Keys.Right)
+                                               .Add(Buttons.LeftThumbstickRight).Add(Buttons.DPadRight);
+            inputManager.AddAction("MenuSelect").Add(Keys.Space).Add(Keys.Enter)
+                                                .Add(Buttons.A).Add(Buttons.Start);
+            inputManager.AddAction("MenuCancel").Add(Keys.Escape)
+                                                .Add(Buttons.B).Add(Buttons.Back);
+            #endregion
         }
         #endregion
 
         #region Handle Input
-        public override void HandleInput(InputState input)
+        public override void HandleInput()
         {
+            inputManager.Update();
             // Déplacement vers l'entrée précédente du menu
-            if (input.IsMenuUp(ControllingPlayer))
+            if (inputManager["MenuUp"].IsTapped)
             {
                 selectedEntry--;
 
@@ -49,7 +65,7 @@ namespace Platformer.GameStateManagement.Screens
             }
 
             // Déplacement vers la prochaine entrée du menu
-            if (input.IsMenuDown(ControllingPlayer))
+            if (inputManager["MenuDown"].IsTapped)
             {
                 selectedEntry++;
 
@@ -57,13 +73,13 @@ namespace Platformer.GameStateManagement.Screens
                     selectedEntry = 0;
             }
 
-            PlayerIndex playerIndex;
+            PlayerIndex playerIndex = PlayerIndex.One;
 
-            if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
+            if (inputManager["MenuSelect"].IsDown)
             {
                 OnSelectEntry(selectedEntry, playerIndex);
             }
-            else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
+            else if (inputManager["MenuCancel"].IsDown)
             {
                 OnCancel(playerIndex);
             }

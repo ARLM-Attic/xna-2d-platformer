@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Platformer.GameStateManagement;
+using Platformer.GameStateManagement.Screens;
 
 namespace Platformer
 {
@@ -11,7 +13,7 @@ namespace Platformer
     {
         #region Members
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        ScreenManager screenManager;
         #endregion
 
         #region Methods
@@ -22,6 +24,14 @@ namespace Platformer
             graphics.PreferredBackBufferHeight = 720;
 
             Content.RootDirectory = "Content";
+
+            // Add the ScreenManager
+            screenManager = new ScreenManager(this);
+            Components.Add(screenManager);
+
+            // First screens
+            screenManager.AddScreen(new BackgroundScreen(), null);
+            screenManager.AddScreen(new MainMenuScreen(), null);
         }
 
         /// <summary>
@@ -43,9 +53,6 @@ namespace Platformer
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
             // TODO: use this.Content to load your game content here
         }
 
@@ -80,12 +87,30 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
+            GraphicsDevice.Clear(Color.Black);
+            
+            //TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
         #endregion
     }
+
+    #region Starting point
+    #if WINDOWS || XBOX
+    static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        static void Main(string[] args)
+        {
+            using (PlatformerGame game = new PlatformerGame())
+            {
+                game.Run();
+            }
+        }
+    }
+    #endif
+    #endregion
 }

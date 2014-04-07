@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Microsoft.Xna.Framework.Input;
 #endregion
 
 namespace Platformer.GameStateManagement.Helpers
@@ -66,6 +67,11 @@ namespace Platformer.GameStateManagement.Helpers
 
             TransitionOnTime = TimeSpan.FromSeconds(0.2);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+
+            inputManager.AddAction("Confirm").Add(Keys.Enter)
+                                                .Add(Buttons.A);
+            inputManager.AddAction("Cancel").Add(Keys.Escape)
+                                                .Add(Buttons.B).Add(Buttons.Start);
         }
 
 
@@ -93,30 +99,24 @@ namespace Platformer.GameStateManagement.Helpers
         /// </summary>
         public override void HandleInput()
         {
-            //TODO: A corriger
-            /*PlayerIndex playerIndex;
-
             // We pass in our ControllingPlayer, which may either be null (to
             // accept input from any player) or a specific index. If we pass a null
             // controlling player, the InputState helper returns to us which player
             // actually provided the input. We pass that through to our Accepted and
             // Cancelled events, so they can tell which player triggered them.
-            if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
+            inputManager.Update();
+            if (inputManager["Confirm"].IsTapped)
             {
-                // Raise the accepted event, then exit the message box.
                 if (Accepted != null)
-                    Accepted(this, new PlayerIndexEventArgs(playerIndex));
-
+                    Accepted(this, new PlayerIndexEventArgs(PlayerIndex.One));
                 ExitScreen();
             }
-            else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
+            else if (inputManager["Cancel"].IsTapped)
             {
-                // Raise the cancelled event, then exit the message box.
                 if (Cancelled != null)
-                    Cancelled(this, new PlayerIndexEventArgs(playerIndex));
-
+                    Cancelled(this, new PlayerIndexEventArgs(PlayerIndex.One));
                 ExitScreen();
-            }*/
+            }
         }
 
 

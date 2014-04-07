@@ -38,7 +38,7 @@ namespace Platformer.GameStateManagement
     public abstract class GameScreen
     {
         #region Properties
-        protected InputManager inputManager = new InputManager();
+        protected InputManager inputManager = InputManager.Instance;
         protected ContentManager content;
 
         /// <summary>

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Platformer.GameStateManagement.Helpers;
 #endregion
 
 namespace Platformer.GameStateManagement.Screens
@@ -44,6 +45,16 @@ namespace Platformer.GameStateManagement.Screens
         #endregion
 
         #region Handle Input
+        public override void HandleInput()
+        {
+            inputManager.Update();
+
+            if (inputManager["ActivatePause"].IsTapped)
+            {
+                //TODO: Externalize text in resource file
+                ScreenManager.AddScreen(new MessageBoxScreen("Do you want to exit the game ?"), PlayerIndex.One); 
+            }
+        }
         #endregion
 
         #region Update and Draw

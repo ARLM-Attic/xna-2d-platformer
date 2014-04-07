@@ -9,7 +9,22 @@ namespace Platformer.GameInputManagement
 {
     public class InputManager
     {
-        #region
+        #region Singleton pattern
+        private static InputManager instance;
+        public static InputManager Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new InputManager();
+                return instance;
+            }
+        }
+
+        private InputManager() { }
+        #endregion 
+
+        #region Fields
         List<Action> actions = new List<Action>();
         #endregion
 

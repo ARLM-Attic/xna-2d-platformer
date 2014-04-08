@@ -7,10 +7,11 @@ namespace Platformer.GameStateManagement.Screens
     public class LoadingScreen : GameScreen
     {
         #region Fields
-        bool loadingIsSlow;
-        bool otherScreensAreGone;
 
-        GameScreen[] screensToLoad;
+        readonly bool _loadingIsSlow;
+        bool _otherScreensAreGone;
+
+        readonly GameScreen[] _screensToLoad;
         #endregion
 
         #region Initialization
@@ -18,10 +19,10 @@ namespace Platformer.GameStateManagement.Screens
         /// Ne pas utiliser directement en dehors de la classe (private).
         /// Privilégier la méthode static Load().
         /// </summary>
-        private LoadingScreen(ScreenManager screenManager, bool loadingIsSlow, GameScreen[] screensToLoad)
+        private LoadingScreen(bool loadingIsSlow, GameScreen[] screensToLoad)
         {
-            this.loadingIsSlow = loadingIsSlow;
-            this.screensToLoad = screensToLoad;
+            _loadingIsSlow = loadingIsSlow;
+            _screensToLoad = screensToLoad;
 
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
         }
@@ -36,7 +37,7 @@ namespace Platformer.GameStateManagement.Screens
                 screen.ExitScreen();
             }
 
-            LoadingScreen loadingScreen = new LoadingScreen(screenManager, loadingIsSlow, screensToLoad);
+            var loadingScreen = new LoadingScreen(loadingIsSlow, screensToLoad);
 
             screenManager.AddScreen(loadingScreen, controllingPlayer);
         }
@@ -48,11 +49,11 @@ namespace Platformer.GameStateManagement.Screens
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
             // Si tous les écrans ont terminé leur transition, il est temps de charger !
-            if (otherScreensAreGone)
+            if (_otherScreensAreGone)
             {
                 ScreenManager.RemoveScreen(this);
 
-                foreach (GameScreen screen in screensToLoad)
+                foreach (GameScreen screen in _screensToLoad)
                 {
                     if (screen != null)
                     {
@@ -69,10 +70,10 @@ namespace Platformer.GameStateManagement.Screens
             // On cherche à savoir si on est le seul écran actif, ce qui signifie que le chargement est terminé.
             if ((ScreenState == ScreenState.Active) && (ScreenManager.GetScreens().Length == 1))
             {
-                otherScreensAreGone = true;
+                _otherScreensAreGone = true;
             }
 
-            if (loadingIsSlow)
+            if (_loadingIsSlow)
             {
                 SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
                 SpriteFont font = ScreenManager.Font;
@@ -80,7 +81,7 @@ namespace Platformer.GameStateManagement.Screens
                 const string message = "Loading...";
 
                 Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-                Vector2 viewportSize = new Vector2(viewport.Width, viewport.Height);
+                var viewportSize = new Vector2(viewport.Width, viewport.Height);
                 Vector2 textSize = font.MeasureString(message);
                 Vector2 textPosition = (viewportSize - textSize) / 2;
 

@@ -25,31 +25,31 @@ namespace Platformer.GameStateManagement.Screens
 
             #region Actions initialization
             //TODO: Define all actions that player may want to do
-            inputManager.AddAction("ActivatePause").Add(Keys.Escape)
+            InputManager.AddAction("ActivatePause").Add(Keys.Escape)
                                                    .Add(Buttons.Start);
             #endregion
         }
 
         public override void LoadContent()
         {
-            if (content == null)
-                content = new ContentManager(ScreenManager.Game.Services, "Content");
+            if (Content == null)
+                Content = new ContentManager(ScreenManager.Game.Services, "Content");
 
             //TODO: Add content for the game (sprites, sounds, etc...)
         }
 
         public override void UnloadContent()
         {
-            content.Unload();
+            Content.Unload();
         }
         #endregion
 
         #region Handle Input
         public override void HandleInput()
         {
-            inputManager.Update();
+            InputManager.Update();
 
-            if (inputManager["ActivatePause"].IsTapped)
+            if (InputManager["ActivatePause"].IsTapped)
             {
                 //TODO: Externalize text in resource file
                 ScreenManager.AddScreen(new MessageBoxScreen("Do you want to exit the game ?"), PlayerIndex.One); 
@@ -72,9 +72,7 @@ namespace Platformer.GameStateManagement.Screens
 
             const string message = "GAME CORE IS RUNNING";
 
-            Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
-
-            Vector2 viewportSize = new Vector2(viewport.Width, viewport.Height);
+            var viewportSize = new Vector2(viewport.Width, viewport.Height);
             Vector2 textSize = font.MeasureString(message);
             Vector2 textPosition = (viewportSize - textSize) / 2;
 

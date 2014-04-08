@@ -8,10 +8,9 @@
 #endregion
 
 #region Using Statements
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 #endregion
 
@@ -25,8 +24,8 @@ namespace Platformer.GameStateManagement.Helpers
     {
         #region Fields
 
-        string message;
-        Texture2D gradientTexture;
+        readonly string _message;
+        Texture2D _gradientTexture;
 
         #endregion
 
@@ -59,18 +58,18 @@ namespace Platformer.GameStateManagement.Helpers
                                      "\nB button, Esc = cancel";
 
             if (includeUsageText)
-                this.message = message + usageText;
+                _message = message + usageText;
             else
-                this.message = message;
+                _message = message;
 
             IsPopup = true;
 
             TransitionOnTime = TimeSpan.FromSeconds(0.2);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
 
-            inputManager.AddAction("Confirm").Add(Keys.Enter)
+            InputManager.AddAction("Confirm").Add(Keys.Enter)
                                                 .Add(Buttons.A);
-            inputManager.AddAction("Cancel").Add(Keys.Escape)
+            InputManager.AddAction("Cancel").Add(Keys.Escape)
                                                 .Add(Buttons.B).Add(Buttons.Start);
         }
 
@@ -83,9 +82,9 @@ namespace Platformer.GameStateManagement.Helpers
         /// </summary>
         public override void LoadContent()
         {
-            ContentManager content = ScreenManager.Game.Content;
+            Content = ScreenManager.Game.Content;
 
-            gradientTexture = content.Load<Texture2D>("Images/messageBoxBG");
+            _gradientTexture = Content.Load<Texture2D>("Images/messageBoxBG");
         }
 
 
@@ -104,14 +103,14 @@ namespace Platformer.GameStateManagement.Helpers
             // controlling player, the InputState helper returns to us which player
             // actually provided the input. We pass that through to our Accepted and
             // Cancelled events, so they can tell which player triggered them.
-            inputManager.Update();
-            if (inputManager["Confirm"].IsTapped)
+            InputManager.Update();
+            if (InputManager["Confirm"].IsTapped)
             {
                 if (Accepted != null)
                     Accepted(this, new PlayerIndexEventArgs(PlayerIndex.One));
                 ExitScreen();
             }
-            else if (inputManager["Cancel"].IsTapped)
+            else if (InputManager["Cancel"].IsTapped)
             {
                 if (Cancelled != null)
                     Cancelled(this, new PlayerIndexEventArgs(PlayerIndex.One));
@@ -138,15 +137,15 @@ namespace Platformer.GameStateManagement.Helpers
 
             // Center the message text in the viewport.
             Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-            Vector2 viewportSize = new Vector2(viewport.Width, viewport.Height);
-            Vector2 textSize = font.MeasureString(message);
+            var viewportSize = new Vector2(viewport.Width, viewport.Height);
+            Vector2 textSize = font.MeasureString(_message);
             Vector2 textPosition = (viewportSize - textSize) / 2;
 
             // The background includes a border somewhat larger than the text itself.
             const int hPad = 32;
             const int vPad = 16;
 
-            Rectangle backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
+            var backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
                                                           (int)textPosition.Y - vPad,
                                                           (int)textSize.X + hPad * 2,
                                                           (int)textSize.Y + vPad * 2);
@@ -157,10 +156,10 @@ namespace Platformer.GameStateManagement.Helpers
             spriteBatch.Begin();
 
             // Draw the background rectangle.
-            spriteBatch.Draw(gradientTexture, backgroundRectangle, color);
+            spriteBatch.Draw(_gradientTexture, backgroundRectangle, color);
 
             // Draw the message box text.
-            spriteBatch.DrawString(font, message, textPosition, color);
+            spriteBatch.DrawString(font, _message, textPosition, color);
 
             spriteBatch.End();
         }

@@ -26,7 +26,7 @@ namespace Platformer.GameStateManagement.Screens
     public class BackgroundScreen : GameScreen
     {
         #region Fields
-        Texture2D backgroundTexture;
+        Texture2D _backgroundTexture;
         #endregion
 
         #region Initialization
@@ -48,10 +48,10 @@ namespace Platformer.GameStateManagement.Screens
         /// </summary>
         public override void LoadContent()
         {
-            if (content == null)
-                content = new ContentManager(ScreenManager.Game.Services, "Content");
+            if (Content == null)
+                Content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            backgroundTexture = content.Load<Texture2D>("Images/backgroundMainMenu");
+            _backgroundTexture = Content.Load<Texture2D>("Images/backgroundMainMenu");
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Platformer.GameStateManagement.Screens
         /// </summary>
         public override void UnloadContent()
         {
-            content.Unload();
+            Content.Unload();
         }
         #endregion
 
@@ -84,11 +84,11 @@ namespace Platformer.GameStateManagement.Screens
         {
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
             Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-            Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
+            var fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
 
             spriteBatch.Begin();
 
-            spriteBatch.Draw(backgroundTexture, fullscreen,
+            spriteBatch.Draw(_backgroundTexture, fullscreen,
                              new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
 
             spriteBatch.End();

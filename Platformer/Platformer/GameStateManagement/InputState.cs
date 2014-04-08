@@ -63,7 +63,7 @@ namespace Platformer.GameStateManagement
         /// </summary>
         public void Update()
         {
-            for (int i = 0; i < MaxInputs; i++)
+            for (var i = 0; i < MaxInputs; i++)
             {
                 LastKeyboardStates[i] = CurrentKeyboardStates[i];
                 LastGamePadStates[i] = CurrentGamePadStates[i];
@@ -90,24 +90,19 @@ namespace Platformer.GameStateManagement
         public bool IsNewKeyPress(Keys key, PlayerIndex? controllingPlayer,
                                             out PlayerIndex playerIndex)
         {
-            if (controllingPlayer.HasValue)
-            {
-                // Read input from the specified player.
-                playerIndex = controllingPlayer.Value;
-
-                int i = (int)playerIndex;
-
-                return (CurrentKeyboardStates[i].IsKeyDown(key) &&
-                        LastKeyboardStates[i].IsKeyUp(key));
-            }
-            else
-            {
-                // Accept input from any player.
+            if (!controllingPlayer.HasValue)
                 return (IsNewKeyPress(key, PlayerIndex.One, out playerIndex) ||
                         IsNewKeyPress(key, PlayerIndex.Two, out playerIndex) ||
                         IsNewKeyPress(key, PlayerIndex.Three, out playerIndex) ||
                         IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
-            }
+            playerIndex = controllingPlayer.Value;
+
+            var i = (int) playerIndex;
+
+            return (CurrentKeyboardStates[i].IsKeyDown(key) &&
+                    LastKeyboardStates[i].IsKeyUp(key));
+            // Read input from the specified player.
+            // Accept input from any player.
         }
 
 
@@ -120,24 +115,19 @@ namespace Platformer.GameStateManagement
         public bool IsNewButtonPress(Buttons button, PlayerIndex? controllingPlayer,
                                                      out PlayerIndex playerIndex)
         {
-            if (controllingPlayer.HasValue)
-            {
-                // Read input from the specified player.
-                playerIndex = controllingPlayer.Value;
-
-                int i = (int)playerIndex;
-
-                return (CurrentGamePadStates[i].IsButtonDown(button) &&
-                        LastGamePadStates[i].IsButtonUp(button));
-            }
-            else
-            {
-                // Accept input from any player.
+            if (!controllingPlayer.HasValue)
                 return (IsNewButtonPress(button, PlayerIndex.One, out playerIndex) ||
                         IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
                         IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
                         IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
-            }
+            // Read input from the specified player.
+            playerIndex = controllingPlayer.Value;
+
+            var i = (int)playerIndex;
+
+            return (CurrentGamePadStates[i].IsButtonDown(button) &&
+                    LastGamePadStates[i].IsButtonUp(button));
+            // Accept input from any player.
         }
 
 

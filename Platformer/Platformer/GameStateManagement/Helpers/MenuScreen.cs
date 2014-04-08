@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Platformer.GameInputManagement;
-using System;
-using System.Collections.Generic;
 
 namespace Platformer.GameStateManagement.Helpers
 {
@@ -13,39 +12,41 @@ namespace Platformer.GameStateManagement.Helpers
     public class MenuScreen : GameScreen
     {
         #region Fields
-        List<MenuEntry> menuEntries = new List<MenuEntry>();
 
-        int selectedEntry = 0;
+        readonly List<MenuEntry> _menuEntries = new List<MenuEntry>();
 
-        string menuTitle;
+        int _selectedEntry;
+
+        readonly string _menuTitle;
         #endregion
 
         #region Properties
         protected IList<MenuEntry> MenuEntries
         {
-            get { return menuEntries; }
+            get { return _menuEntries; }
         }
         #endregion
 
         #region Initialization
         public MenuScreen(string menuTitle)
         {
-            this.menuTitle = menuTitle;
+            _selectedEntry = 0;
+            _menuTitle = menuTitle;
 
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             #region Actions initialization
-            inputManager.AddAction("MenuUp").Add(Keys.Up).Add(Buttons.LeftThumbstickUp).Add(Buttons.DPadUp);
-            inputManager.AddAction("MenuDown").Add(Keys.Down)
+            InputManager.AddAction("MenuUp").Add(Keys.Up).Add(Buttons.LeftThumbstickUp).Add(Buttons.DPadUp);
+            InputManager.AddAction("MenuDown").Add(Keys.Down)
                                               .Add(Buttons.LeftThumbstickDown).Add(Buttons.DPadDown);
-            inputManager.AddAction("MenuLeft").Add(Keys.Left)
+            InputManager.AddAction("MenuLeft").Add(Keys.Left)
                                               .Add(Buttons.LeftThumbstickLeft).Add(Buttons.DPadLeft);
-            inputManager.AddAction("MenuRight").Add(Keys.Right)
+            InputManager.AddAction("MenuRight").Add(Keys.Right)
                                                .Add(Buttons.LeftThumbstickRight).Add(Buttons.DPadRight);
-            inputManager.AddAction("MenuSelect").Add(Keys.Space).Add(Keys.Enter)
+            InputManager.AddAction("MenuSelect").Add(Keys.Space).Add(Keys.Enter)
                                                 .Add(Buttons.A).Add(Buttons.Start);
-            inputManager.AddAction("MenuCancel").Add(Keys.Escape)
+            InputManager.AddAction("MenuCancel").Add(Keys.Escape)
                                                 .Add(Buttons.B).Add(Buttons.Back);
             #endregion
         }
@@ -54,32 +55,32 @@ namespace Platformer.GameStateManagement.Helpers
         #region Handle Input
         public override void HandleInput()
         {
-            inputManager.Update();
+            InputManager.Update();
             // Déplacement vers l'entrée précédente du menu
-            if (inputManager["MenuUp"].IsTapped)
+            if (InputManager["MenuUp"].IsTapped)
             {
-                selectedEntry--;
+                _selectedEntry--;
 
-                if (selectedEntry < 0)
-                    selectedEntry = menuEntries.Count - 1;
+                if (_selectedEntry < 0)
+                    _selectedEntry = _menuEntries.Count - 1;
             }
 
             // Déplacement vers la prochaine entrée du menu
-            if (inputManager["MenuDown"].IsTapped)
+            if (InputManager["MenuDown"].IsTapped)
             {
-                selectedEntry++;
+                _selectedEntry++;
 
-                if (selectedEntry >= menuEntries.Count)
-                    selectedEntry = 0;
+                if (_selectedEntry >= _menuEntries.Count)
+                    _selectedEntry = 0;
             }
 
-            PlayerIndex playerIndex = PlayerIndex.One;
+            const PlayerIndex playerIndex = PlayerIndex.One;
 
-            if (inputManager["MenuSelect"].IsDown)
+            if (InputManager["MenuSelect"].IsDown)
             {
-                OnSelectEntry(selectedEntry, playerIndex);
+                OnSelectEntry(_selectedEntry, playerIndex);
             }
-            else if (inputManager["MenuCancel"].IsDown)
+            else if (InputManager["MenuCancel"].IsDown)
             {
                 OnCancel(playerIndex);
             }
@@ -92,7 +93,7 @@ namespace Platformer.GameStateManagement.Helpers
         /// <param name="playerIndex">Le joueur effectuant le choix</param>
         protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex)
         {
-            menuEntries[entryIndex].OnSelectEntry(playerIndex);
+            _menuEntries[entryIndex].OnSelectEntry(playerIndex);
         }
 
         /// <summary>
@@ -116,11 +117,11 @@ namespace Platformer.GameStateManagement.Helpers
         #region Update & Draw
         protected virtual void UpdateMenuEntryLocations()
         {
-            float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
+            var transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
-            Vector2 position = new Vector2(0f, 175f);
+            var position = new Vector2(0f, 175f);
 
-            foreach (MenuEntry entry in menuEntries)
+            foreach (MenuEntry entry in _menuEntries)
             {
                 position.X = ScreenManager.GraphicsDevice.Viewport.Width / 2 - entry.GetWidth(this) / 2;
 
@@ -143,11 +144,11 @@ namespace Platformer.GameStateManagement.Helpers
         {
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-            for (int i = 0; i < menuEntries.Count; i++)
+            for (int i = 0; i < _menuEntries.Count; i++)
             {
-                bool isSelected = IsActive && (i == selectedEntry);
+                bool isSelected = IsActive && (i == _selectedEntry);
 
-                menuEntries[i].Update(this, isSelected, gameTime);
+                _menuEntries[i].Update(this, isSelected, gameTime);
             }
         }
 
@@ -161,27 +162,30 @@ namespace Platformer.GameStateManagement.Helpers
 
             sb.Begin();
 
-            for (int i = 0; i < menuEntries.Count; i++)
+            for (var i = 0; i < _menuEntries.Count; i++)
             {
-                MenuEntry entry = menuEntries[i];
+                MenuEntry entry = _menuEntries[i];
 
-                bool isSelected = IsActive && (i == selectedEntry);
+                bool isSelected = IsActive && (i == _selectedEntry);
 
                 entry.Draw(this, isSelected, gameTime);
             }
 
-            float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
+            var transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
             // Draw the menu title centered on the screen
-            Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
-            Vector2 titleOrigin = font.MeasureString(menuTitle) / 2;
-            Color titleColor = new Color(255, 255, 255) * TransitionAlpha;
-            float titleScale = 1.25f;
+            if (graphics != null)
+            {
+                Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
+                Vector2 titleOrigin = font.MeasureString(_menuTitle) / 2;
+                Color titleColor = new Color(255, 255, 255) * TransitionAlpha;
+                const float titleScale = 1.25f;
 
-            titlePosition.Y -= transitionOffset * 100;
+                titlePosition.Y -= transitionOffset * 100;
 
-            sb.DrawString(font, menuTitle, titlePosition, titleColor, 0,
-                                   titleOrigin, titleScale, SpriteEffects.None, 0);
+                sb.DrawString(font, _menuTitle, titlePosition, titleColor, 0,
+                    titleOrigin, titleScale, SpriteEffects.None, 0);
+            }
 
             sb.End();
         }

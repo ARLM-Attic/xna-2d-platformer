@@ -8,11 +8,9 @@
 #endregion
 
 #region Using Statements
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Platformer.GameStateManagement.Screens;
-using System;
-
 #endregion
 
 namespace Platformer.GameStateManagement.Helpers
@@ -30,7 +28,7 @@ namespace Platformer.GameStateManagement.Helpers
         /// <summary>
         /// The text rendered for this entry.
         /// </summary>
-        string text;
+        string _text;
 
         /// <summary>
         /// Tracks a fading selection effect on the entry.
@@ -38,13 +36,13 @@ namespace Platformer.GameStateManagement.Helpers
         /// <remarks>
         /// The entries transition out of the selection effect when they are deselected.
         /// </remarks>
-        float selectionFade;
+        float _selectionFade;
 
         /// <summary>
         /// The position at which the entry is drawn. This is set by the MenuScreen
         /// each frame in Update.
         /// </summary>
-        Vector2 position;
+        Vector2 _position;
 
         #endregion
 
@@ -56,8 +54,8 @@ namespace Platformer.GameStateManagement.Helpers
         /// </summary>
         public string Text
         {
-            get { return text; }
-            set { text = value; }
+            get { return _text; }
+            set { _text = value; }
         }
 
 
@@ -66,8 +64,8 @@ namespace Platformer.GameStateManagement.Helpers
         /// </summary>
         public Vector2 Position
         {
-            get { return position; }
-            set { position = value; }
+            get { return _position; }
+            set { _position = value; }
         }
 
 
@@ -102,7 +100,7 @@ namespace Platformer.GameStateManagement.Helpers
         /// </summary>
         public MenuEntry(string text)
         {
-            this.text = text;
+            _text = text;
         }
 
 
@@ -119,12 +117,12 @@ namespace Platformer.GameStateManagement.Helpers
             // When the menu selection changes, entries gradually fade between
             // their selected and deselected appearance, rather than instantly
             // popping to the new state.
-            float fadeSpeed = (float)gameTime.ElapsedGameTime.TotalSeconds * 4;
+            var fadeSpeed = (float)gameTime.ElapsedGameTime.TotalSeconds * 4;
 
             if (isSelected)
-                selectionFade = Math.Min(selectionFade + fadeSpeed, 1);
+                _selectionFade = Math.Min(_selectionFade + fadeSpeed, 1);
             else
-                selectionFade = Math.Max(selectionFade - fadeSpeed, 0);
+                _selectionFade = Math.Max(_selectionFade - fadeSpeed, 0);
         }
 
 
@@ -141,7 +139,7 @@ namespace Platformer.GameStateManagement.Helpers
 
             float pulsate = (float)Math.Sin(time * 6) + 1;
 
-            float scale = 1 + pulsate * 0.05f * selectionFade;
+            float scale = 1 + pulsate * 0.05f * _selectionFade;
 
             // Modify the alpha to fade text out during transitions.
             color *= screen.TransitionAlpha;
@@ -151,10 +149,13 @@ namespace Platformer.GameStateManagement.Helpers
             SpriteBatch spriteBatch = screenManager.SpriteBatch;
             SpriteFont font = screenManager.Font;
 
-            Vector2 origin = new Vector2(0, font.LineSpacing / 2);
+            if (font != null)
+            {
+                var origin = new Vector2(0, font.LineSpacing / 2);
 
-            spriteBatch.DrawString(font, text, position, color, 0,
-                                   origin, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, _text, _position, color, 0,
+                    origin, scale, SpriteEffects.None, 0);
+            }
         }
 
 

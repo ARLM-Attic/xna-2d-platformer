@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Platformer.GameStateManagement;
 using Platformer.GameStateManagement.Screens;
@@ -9,42 +8,31 @@ namespace Platformer
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class PlatformerGame : Microsoft.Xna.Framework.Game
+    public class PlatformerGame : Game
     {
         #region Members
-        GraphicsDeviceManager graphics;
-        ScreenManager screenManager;
+
         #endregion
 
         #region Methods
         public PlatformerGame()
         {
-            graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+
+            new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 1280,
+                PreferredBackBufferHeight = 720
+            };
 
             Content.RootDirectory = "Content";
 
             // Add the ScreenManager
-            screenManager = new ScreenManager(this);
+            var screenManager = new ScreenManager(this);
             Components.Add(screenManager);
 
             // First screens
             screenManager.AddScreen(new BackgroundScreen(), null);
             screenManager.AddScreen(new MainMenuScreen(), null);
-        }
-
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
-
-            base.Initialize();
         }
 
         /// <summary>
@@ -74,7 +62,7 @@ namespace Platformer
         {
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+                Exit();
 
             // TODO: Add your update logic here
 
@@ -103,9 +91,9 @@ namespace Platformer
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main(string[] args)
+        static void Main()
         {
-            using (PlatformerGame game = new PlatformerGame())
+            using (var game = new PlatformerGame())
             {
                 game.Run();
             }

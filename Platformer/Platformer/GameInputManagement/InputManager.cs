@@ -1,38 +1,31 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Platformer.GameInputManagement
 {
     public class InputManager
     {
         #region Singleton pattern
-        private static InputManager instance;
+        private static InputManager _instance;
         public static InputManager Instance
         {
-            get
-            {
-                if (instance == null)
-                    instance = new InputManager();
-                return instance;
-            }
+            get { return _instance ?? (_instance = new InputManager()); }
         }
 
         private InputManager() { }
         #endregion 
 
         #region Fields
-        List<Action> actions = new List<Action>();
+        readonly List<Action> _actions = new List<Action>();
         #endregion
 
         #region Methods
         public Action AddAction(String actionName)
         {
-            Action a = new Action(this, actionName);
-            actions.Add(a);
+            var a = new Action(this, actionName);
+            _actions.Add(a);
             return a;
         }
 
@@ -40,16 +33,16 @@ namespace Platformer.GameInputManagement
         {
             get
             {
-                return actions.Find(x => { return x.Name == actionName; });
+                return _actions.Find(x => x.Name == actionName);
             }
         }
 
         public void Update()
         {
-            KeyboardState kbState = Keyboard.GetState(PlayerIndex.One);
-            GamePadState gpState = GamePad.GetState(PlayerIndex.One);
+            var kbState = Keyboard.GetState(PlayerIndex.One);
+            var gpState = GamePad.GetState(PlayerIndex.One);
 
-            foreach (Action a in actions)
+            foreach (var a in _actions)
             {
                 a.Update(kbState, gpState);
             }

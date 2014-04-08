@@ -11,9 +11,9 @@ namespace Platformer.GameStateManagement.Screens
             : base("Platformer")
         {
             // Menu entries
-            MenuEntry newGameMenuEntry = new MenuEntry("New Game");
-            MenuEntry optionsMenuEntry = new MenuEntry("Options");
-            MenuEntry exitMenuEntry = new MenuEntry("Exit");
+            var newGameMenuEntry = new MenuEntry("New Game");
+            var optionsMenuEntry = new MenuEntry("Options");
+            var exitMenuEntry = new MenuEntry("Exit");
 
             // Add event to each entry
             newGameMenuEntry.Selected += newGameMenuEntry_Selected;

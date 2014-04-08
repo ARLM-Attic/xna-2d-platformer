@@ -26,38 +26,32 @@ namespace Platformer.GameStateManagement
     public class ScreenManager : DrawableGameComponent
     {
         #region Fields
-        List<GameScreen> screens = new List<GameScreen>();
-        List<GameScreen> screensToUpdate = new List<GameScreen>();
 
-        InputState input = new InputState();
+        readonly List<GameScreen> _screens = new List<GameScreen>();
+        readonly List<GameScreen> _screensToUpdate = new List<GameScreen>();
 
-        SpriteBatch spriteBatch;
-        SpriteFont font;
-        Texture2D blankTexture;
+        InputState _input = new InputState();
 
-        bool isInitialized;
+        Texture2D _blankTexture;
 
-        bool traceEnabled;
+        bool _isInitialized;
+
+        bool _traceEnabled;
         #endregion
 
         #region Properties
+
         /// <summary>
         /// A default SpriteBatch shared by all the screens. This saves
         /// each screen having to bother creating their own local instance.
         /// </summary>
-        public SpriteBatch SpriteBatch
-        {
-            get { return spriteBatch; }
-        }
+        public SpriteBatch SpriteBatch { get; private set; }
 
         /// <summary>
         /// A default font shared by all the screens. This saves
         /// each screen having to bother loading their own local copy.
         /// </summary>
-        public SpriteFont Font
-        {
-            get { return font; }
-        }
+        public SpriteFont Font { get; private set; }
 
         /// <summary>
         /// If true, the manager prints out a list of all the screens
@@ -66,8 +60,8 @@ namespace Platformer.GameStateManagement
         /// </summary>
         public bool TraceEnabled
         {
-            get { return traceEnabled; }
-            set { traceEnabled = value; }
+            get { return _traceEnabled; }
+            set { _traceEnabled = value; }
         }
         #endregion
 
@@ -87,7 +81,7 @@ namespace Platformer.GameStateManagement
         {
             base.Initialize();
 
-            isInitialized = true;
+            _isInitialized = true;
         }
 
         /// <summary>
@@ -98,12 +92,12 @@ namespace Platformer.GameStateManagement
             // Load content belonging to the screen manager.
             ContentManager content = Game.Content;
 
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = content.Load<SpriteFont>("Fonts/menuFont");
-            blankTexture = content.Load<Texture2D>("Images/blank");
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            Font = content.Load<SpriteFont>("Fonts/menuFont");
+            _blankTexture = content.Load<Texture2D>("Images/blank");
 
             // Tell each of the screens to load their content.
-            foreach (GameScreen screen in screens)
+            foreach (GameScreen screen in _screens)
             {
                 screen.LoadContent();
             }
@@ -115,7 +109,7 @@ namespace Platformer.GameStateManagement
         protected override void UnloadContent()
         {
             // Tell each of the screens to unload their content.
-            foreach (GameScreen screen in screens)
+            foreach (GameScreen screen in _screens)
             {
                 screen.UnloadContent();
             }
@@ -130,21 +124,21 @@ namespace Platformer.GameStateManagement
         {
             // Make a copy of the master screen list, to avoid confusion if
             // the process of updating one screen adds or removes others.
-            screensToUpdate.Clear();
+            _screensToUpdate.Clear();
 
-            foreach (GameScreen screen in screens)
-                screensToUpdate.Add(screen);
+            foreach (GameScreen screen in _screens)
+                _screensToUpdate.Add(screen);
 
             bool otherScreenHasFocus = !Game.IsActive;
             bool coveredByOtherScreen = false;
 
             // Loop as long as there are screens waiting to be updated.
-            while (screensToUpdate.Count > 0)
+            while (_screensToUpdate.Count > 0)
             {
                 // Pop the topmost screen off the waiting list.
-                GameScreen screen = screensToUpdate[screensToUpdate.Count - 1];
+                GameScreen screen = _screensToUpdate[_screensToUpdate.Count - 1];
 
-                screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
+                _screensToUpdate.RemoveAt(_screensToUpdate.Count - 1);
 
                 // Update the screen.
                 screen.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
@@ -169,7 +163,7 @@ namespace Platformer.GameStateManagement
             }
 
             // Print debug trace?
-            if (traceEnabled)
+            if (_traceEnabled)
                 TraceScreens();
         }
 
@@ -178,9 +172,9 @@ namespace Platformer.GameStateManagement
         /// </summary>
         void TraceScreens()
         {
-            List<string> screenNames = new List<string>();
+            var screenNames = new List<string>();
 
-            foreach (GameScreen screen in screens)
+            foreach (var screen in _screens)
                 screenNames.Add(screen.GetType().Name + " " + screen.ScreenState.ToString());
 
             Console.WriteLine(string.Join(", ", screenNames.ToArray()));
@@ -191,7 +185,7 @@ namespace Platformer.GameStateManagement
         /// </summary>
         public override void Draw(GameTime gameTime)
         {
-            foreach (GameScreen screen in screens)
+            foreach (var screen in _screens)
             {
                 if (screen.ScreenState == ScreenState.Hidden)
                     continue;
@@ -212,12 +206,12 @@ namespace Platformer.GameStateManagement
             screen.IsExiting = false;
 
             // If we have a graphics device, tell the screen to load content.
-            if (isInitialized)
+            if (_isInitialized)
             {
                 screen.LoadContent();
             }
 
-            screens.Add(screen);
+            _screens.Add(screen);
         }
 
         /// <summary>
@@ -229,13 +223,13 @@ namespace Platformer.GameStateManagement
         public void RemoveScreen(GameScreen screen)
         {
             // If we have a graphics device, tell the screen to unload content.
-            if (isInitialized)
+            if (_isInitialized)
             {
                 screen.UnloadContent();
             }
 
-            screens.Remove(screen);
-            screensToUpdate.Remove(screen);
+            _screens.Remove(screen);
+            _screensToUpdate.Remove(screen);
         }
 
         /// <summary>
@@ -245,7 +239,7 @@ namespace Platformer.GameStateManagement
         /// </summary>
         public GameScreen[] GetScreens()
         {
-            return screens.ToArray();
+            return _screens.ToArray();
         }
 
         /// <summary>
@@ -254,15 +248,15 @@ namespace Platformer.GameStateManagement
         /// </summary>
         public void FadeBackBufferToBlack(float alpha)
         {
-            Viewport viewport = GraphicsDevice.Viewport;
+            var viewport = GraphicsDevice.Viewport;
 
-            spriteBatch.Begin();
+            SpriteBatch.Begin();
 
-            spriteBatch.Draw(blankTexture,
-                             new Microsoft.Xna.Framework.Rectangle(0, 0, viewport.Width, viewport.Height),
+            SpriteBatch.Draw(_blankTexture,
+                             new Rectangle(0, 0, viewport.Width, viewport.Height),
                              Color.Black * alpha);
 
-            spriteBatch.End();
+            SpriteBatch.End();
         }
         #endregion
     }

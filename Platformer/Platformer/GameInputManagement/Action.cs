@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using Platformer.Properties;
 
 namespace Platformer.GameInputManagement
 {
@@ -11,7 +10,6 @@ namespace Platformer.GameInputManagement
 
         readonly List<Keys> _keysList = new List<Keys>();
         readonly List<Buttons> _buttonsList = new List<Buttons>();
-        [UsedImplicitly] InputManager _manager;
         bool _previousStatus;
 
         public bool IsDown { get; private set; }
@@ -20,11 +18,10 @@ namespace Platformer.GameInputManagement
         #endregion
 
         #region Methods
-        public Action(InputManager manager, string name)
+        public Action(string name)
         {
             _previousStatus = false;
             IsDown = false;
-            _manager = manager;
             Name = name;
         }
 
